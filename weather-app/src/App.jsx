@@ -1,35 +1,67 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from 'react';
+import axios from 'axios';
+import './App.css';
+
+const API_KEY = 'c10a8635e25759d7e4b072dc5b120161'; //API key
+const API_URL = `https://api.openweathermap.org/data/2.5/weather`;
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [city, setCity] = useState('');
+  const [weather, setWeather] = useState(null);
+  const [error, setError] = useState('');
+
+  const fetchWeather = async () => {
+    if (!city.trim()) {
+      setError('Please enter a city name.');
+      return;
+    }
+
+    try {
+      const response = await axios.get(API_URL, {
+        params: {
+          q: city,
+          appid: API_KEY,
+          units: 'metric',
+        },
+      });
+      setWeather(response.data);
+      setError('');
+    } catch (err) {
+      if (err.response && err.response.status === 404) {
+        setError('City not found. Please try again.');
+      } else if (err.response && err.response.status === 401) {
+        setError('Invalid API key. Please check your API key.');
+      } else {
+        setError('An error occurred. Please try again later.');
+      }
+      setWeather(null);
+    }
+  };
 
   return (
-    <>
+    <div className="App">
+      <h1>Sherylann's Weather App 😂😂😂😂</h1>
       <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        <input
+          type="text"
+          placeholder="Enter city name"
+          value={city}
+          onChange={(e) => setCity(e.target.value)}
+        />
+        <button onClick={fetchWeather}>Get Weather</button>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+      {error && <p className="error">{error}</p>}
+      {weather && (
+        <div className="weather-info">
+          <h2>{weather.name}, {weather.sys.country}</h2>
+          <p>{weather.weather[0].description}</p>
+          <p>Temperature: {weather.main.temp}°C</p>
+          <p>Humidity: {weather.main.humidity}%</p>
+          <p>Wind Speed: {weather.wind.speed} m/s</p>
+        </div>
+      )}
+    </div>
+  );
 }
 
-export default App
+export default App;
