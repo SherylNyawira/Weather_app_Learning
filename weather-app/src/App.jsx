@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './App.css';
 
-const API_KEY = 'c10a8635e25759d7e4b072dc5b120161'; //API key
+const API_KEY = 'c10a8635e25759d7e4b072dc5b120161'; 
 const API_URL = `https://api.openweathermap.org/data/2.5/weather`;
 
 function App() {
@@ -40,13 +40,14 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Sherylann's Weather App 😂😂😂😂</h1>
+      <h1>Sherylann's Weather App</h1>
       <div>
         <input
           type="text"
           placeholder="Enter city name"
           value={city}
           onChange={(e) => setCity(e.target.value)}
+          onKeyPress={(e) => e.key === 'Enter' && fetchWeather()} 
         />
         <button onClick={fetchWeather}>Get Weather</button>
       </div>
@@ -56,6 +57,7 @@ function App() {
           <h2>{weather.name}, {weather.sys.country}</h2>
           <p>{weather.weather[0].description}</p>
           <p>Temperature: {weather.main.temp}°C</p>
+          <p>Feels Like: {weather.main.feels_like}°C</p>
           <p>Humidity: {weather.main.humidity}%</p>
           <p>Wind Speed: {weather.wind.speed} m/s</p>
         </div>
